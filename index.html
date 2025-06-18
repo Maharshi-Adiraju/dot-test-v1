@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dot Test v1 – #ProductTruths</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f4f4f4;
+      font-family: sans-serif;
+      text-align: center;
+    }
+    h1 {
+      font-weight: 400;
+      margin-top: 30px;
+      color: #222;
+    }
+    canvas {
+      border: 2px dashed #999;
+      margin-top: 20px;
+      background: #fff;
+      touch-action: none;
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: #333;
+      visibility: hidden;
+    }
+  </style>
+</head>
+<body>
+  <h1>Draw a dot. Don’t lift. Keep going.</h1>
+  <canvas id="canvas" width="400" height="400"></canvas>
+  <div id="message">✨ Momentum builds motivation. You felt it. ✨</div>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let drawing = false;
+    let drawCount = 0;
+    const message = document.getElementById("message");
+
+    canvas.addEventListener("mousedown", () => { drawing = true; });
+    canvas.addEventListener("mouseup", () => { drawing = false; });
+    canvas.addEventListener("mouseleave", () => { drawing = false; });
+
+    canvas.addEventListener("mousemove", draw);
+    canvas.addEventListener("touchstart", () => { drawing = true; });
+    canvas.addEventListener("touchend", () => { drawing = false; });
+    canvas.addEventListener("touchcancel", () => { drawing = false; });
+    canvas.addEventListener("touchmove", (e) => draw(e, true));
+
+    function draw(e, isTouch = false) {
+      if (!drawing) return;
+      let x, y;
+      if (isTouch) {
+        const rect = canvas.getBoundingClientRect();
+        x = e.touches[0].clientX - rect.left;
+        y = e.touches[0].clientY - rect.top;
+      } else {
+        x = e.offsetX;
+        y = e.offsetY;
+      }
+
+      ctx.fillStyle = "#333";
+      ctx.beginPath();
+      ctx.arc(x, y, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      drawCount++;
+      if (drawCount > 200 && message.style.visibility === "hidden") {
+        message.style.visibility = "visible";
+      }
+    }
+  </script>
+</body>
+</html>
