@@ -51,64 +51,70 @@
     .reveal {
       opacity: 1;
     }
-    .post-actions {
-      display: none;
-      margin-top: 12px;
+    .quote-block {
+      max-width: 320px;
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.95em;
+      color: #444;
+      font-style: italic;
+    }
+    .quote-block strong {
+      font-weight: bold;
+    }
+    .mark-mode,
+    .share-section {
+      margin-top: 14px;
+      font-size: 0.9em;
+      color: #555;
       text-align: center;
     }
-    .post-actions a {
+    .mark-mode a,
+    .share-section a {
       color: #0077b5;
       text-decoration: none;
-      font-size: 0.95em;
-    }
-    .post-actions button {
-      margin-top: 6px;
-      padding: 6px 10px;
-      font-size: 0.85em;
-      border: 1px solid #aaa;
-      background: #fff;
-      cursor: pointer;
-    }
-    .easter-egg {
-      margin-top: 12px;
-      font-size: 0.9em;
-      color: #666;
-      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>Draw a star. Doesn’t have to be perfect. Just don’t lift.</h1>
+  <h1>Start a line. Don’t stop.</h1>
 
   <div class="canvas-container">
     <canvas id="canvas" width="300" height="300"></canvas>
     <div id="message" class="overlay">✨ Momentum builds motivation. You just felt it. ✨</div>
   </div>
 
-  <div id="post-actions" class="post-actions">
-    <p>🪐 Want more experiences like this?  
-      <a href="https://linkedin.com/in/yourprofile" target="_blank">
-        Follow Maharshi on LinkedIn
-      </a>
-    </p>
-    <p style="margin-top: 6px;">
-      🔁 Now that you’ve felt it — pass it on.<br>
-      <button onclick="copyLink()">📋 Copy LaunchPoint</button>
-    </p>
+  <div id="productLesson" class="quote-block" style="display: none;">
+    <p>“That’s product too.”</p>
+    <p>We don’t motivate users. We help them move first—so <strong>they</strong> feel momentum.</p>
   </div>
 
-  <p id="easterEgg" class="easter-egg">🥚 You kept drawing. That’s what curiosity looks like. Welcome to the product lab.</p>
+  <div id="markPrompt" class="mark-mode" style="display: none;">
+    🖋️ Want to leave your mark?<br>
+    <a href="https://yourusername.github.io/launchpoint/?mode=mark" target="_blank">
+      Open LaunchPoint in Mark Mode
+    </a>
+  </div>
+
+  <div id="sharePrompt" class="share-section" style="display: none;">
+    📣 Felt it? Someone else will too.<br>
+    <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://yourusername.github.io/launchpoint" 
+       target="_blank">
+       Share LaunchPoint on LinkedIn
+    </a>
+  </div>
 
   <script>
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const message = document.getElementById("message");
-    const postActions = document.getElementById("post-actions");
-    const easterEgg = document.getElementById("easterEgg");
+    const productLesson = document.getElementById("productLesson");
+    const markPrompt = document.getElementById("markPrompt");
+    const sharePrompt = document.getElementById("sharePrompt");
+
     let drawing = false;
     let drawCount = 0;
     let revealed = false;
-    let badgeRevealed = false;
 
     canvas.addEventListener("mousedown", () => drawing = true);
     canvas.addEventListener("mouseup", () => drawing = false);
@@ -138,22 +144,20 @@
       ctx.fill();
 
       drawCount++;
+
       if (drawCount > 100 && !revealed) {
         message.classList.add("reveal");
-        postActions.style.display = "block";
+        setTimeout(() => {
+          productLesson.style.display = "block";
+        }, 2000);
+        setTimeout(() => {
+          markPrompt.style.display = "block";
+        }, 3500);
+        setTimeout(() => {
+          sharePrompt.style.display = "block";
+        }, 5000);
         revealed = true;
       }
-      if (drawCount > 300 && !badgeRevealed) {
-        easterEgg.style.display = "block";
-        badgeRevealed = true;
-      }
-    }
-
-    function copyLink() {
-      const url = "https://yourusername.github.io/launchpoint"; // replace with actual URL
-      navigator.clipboard.writeText(url).then(() => {
-        alert("Link copied to clipboard!");
-      });
     }
   </script>
 </body>
