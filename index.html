@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dot Test – #ProductTruths</title>
+  <title>LaunchPoint – #ProductTruths</title>
   <style>
     body {
       margin: 0;
@@ -31,7 +31,7 @@
       height: 300px;
       touch-action: none;
     }
-    #message {
+    .overlay {
       position: absolute;
       top: 0;
       left: 0;
@@ -41,32 +41,74 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-size: 1.3em;
+      font-size: 1.2em;
       color: #444;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.85);
       pointer-events: none;
       opacity: 0;
       transition: opacity 1.5s ease-in-out;
     }
-    #message.reveal {
+    .reveal {
       opacity: 1;
+    }
+    .post-actions {
+      display: none;
+      margin-top: 12px;
+      text-align: center;
+    }
+    .post-actions a {
+      color: #0077b5;
+      text-decoration: none;
+      font-size: 0.95em;
+    }
+    .post-actions button {
+      margin-top: 6px;
+      padding: 6px 10px;
+      font-size: 0.85em;
+      border: 1px solid #aaa;
+      background: #fff;
+      cursor: pointer;
+    }
+    .easter-egg {
+      margin-top: 12px;
+      font-size: 0.9em;
+      color: #666;
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>Draw a dot. Don’t lift. Keep going.</h1>
+  <h1>Start a line. Don’t stop.</h1>
 
   <div class="canvas-container">
     <canvas id="canvas" width="300" height="300"></canvas>
-    <div id="message">✨ Momentum builds motivation. You just felt it. ✨</div>
+    <div id="message" class="overlay">✨ Momentum builds motivation. You just felt it. ✨</div>
   </div>
+
+  <div id="post-actions" class="post-actions">
+    <p>🪐 Want more experiences like this?  
+      <a href="https://linkedin.com/in/yourprofile" target="_blank">
+        Follow Maharshi on LinkedIn
+      </a>
+    </p>
+    <p style="margin-top: 6px;">
+      🔁 Now that you’ve felt it — pass it on.<br>
+      <button onclick="copyLink()">📋 Copy LaunchPoint</button>
+    </p>
+  </div>
+
+  <p id="easterEgg" class="easter-egg">🥚 You kept drawing. That’s what curiosity looks like. Welcome to the product lab.</p>
 
   <script>
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const message = document.getElementById("message");
+    const postActions = document.getElementById("post-actions");
+    const easterEgg = document.getElementById("easterEgg");
     let drawing = false;
     let drawCount = 0;
+    let revealed = false;
+    let badgeRevealed = false;
 
     canvas.addEventListener("mousedown", () => drawing = true);
     canvas.addEventListener("mouseup", () => drawing = false);
@@ -96,9 +138,22 @@
       ctx.fill();
 
       drawCount++;
-      if (drawCount > 100 && !message.classList.contains("reveal")) {
+      if (drawCount > 100 && !revealed) {
         message.classList.add("reveal");
+        postActions.style.display = "block";
+        revealed = true;
       }
+      if (drawCount > 300 && !badgeRevealed) {
+        easterEgg.style.display = "block";
+        badgeRevealed = true;
+      }
+    }
+
+    function copyLink() {
+      const url = "https://yourusername.github.io/launchpoint"; // replace with actual URL
+      navigator.clipboard.writeText(url).then(() => {
+        alert("Link copied to clipboard!");
+      });
     }
   </script>
 </body>
