@@ -8,7 +8,7 @@
   <style>
     body {
       margin: 0;
-      background: #ffffff;
+      background: #f4f4f4;
       font-family: 'Segoe UI', sans-serif;
       display: flex;
       flex-direction: column;
@@ -215,12 +215,18 @@
       }
     }
 
-    replayButton.addEventListener("click", () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      let i = 0;
-      function animate() {
-        if (i >= path.length) return;
-        const { x, y } = path[i];
-        ctx.fillStyle = "#0077b5";
-        ctx.beginPath();
-        ctx.arc(x, y, 1.5,
+replayButton.addEventListener("click", () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before replay
+  let i = 0;
+  function animate() {
+    if (i >= path.length) return;
+    const { x, y } = path[i];
+    ctx.fillStyle = "#0077b5"; // Use a contrasting color to visually distinguish replay
+    ctx.beginPath();
+    ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    i++;
+    requestAnimationFrame(animate);
+  }
+  animate();
+  });
