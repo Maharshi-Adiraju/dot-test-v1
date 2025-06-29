@@ -51,58 +51,63 @@
     .reveal {
       opacity: 1;
     }
-    .quote-block {
-      max-width: 320px;
-      margin-top: 20px;
-      text-align: center;
-      font-size: 0.95em;
-      color: #444;
-      font-style: italic;
-    }
-    .quote-block strong {
-      font-weight: bold;
-    }
+    .quote-block,
     .mark-mode,
-    .share-section {
+    .share-section,
+    .replay {
+      display: none;
       margin-top: 14px;
       font-size: 0.9em;
       color: #555;
       text-align: center;
+    }
+    .quote-block strong {
+      font-weight: bold;
     }
     .mark-mode a,
     .share-section a {
       color: #0077b5;
       text-decoration: none;
     }
+    #replay {
+      padding: 6px 12px;
+      font-size: 0.85em;
+      border: 1px solid #aaa;
+      background: #fff;
+      cursor: pointer;
+      margin-top: 12px;
+    }
   </style>
 </head>
 <body>
-  <h1>Draw a star. Doesn’t have to be perfect. Just don’t lift.</h1>
+  <h1>Start a line. Don’t stop.</h1>
 
   <div class="canvas-container">
     <canvas id="canvas" width="300" height="300"></canvas>
     <div id="message" class="overlay">✨ Momentum builds motivation. You just felt it. ✨</div>
   </div>
 
-  <div id="productLesson" class="quote-block" style="display: none;">
+  <div id="productLesson" class="quote-block">
     <p>“That’s product too.”</p>
     <p>We don’t motivate users. We help them move first—so <strong>they</strong> feel momentum.</p>
   </div>
 
-  <div id="markPrompt" class="mark-mode" style="display: none;">
+  <div id="markPrompt" class="mark-mode">
     🖋️ Want to leave your mark?<br>
     <a href="https://yourusername.github.io/launchpoint/?mode=mark" target="_blank">
       Open LaunchPoint in Mark Mode
     </a>
   </div>
 
-  <div id="sharePrompt" class="share-section" style="display: none;">
+  <div id="sharePrompt" class="share-section">
     📣 Felt it? Someone else will too.<br>
     <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://yourusername.github.io/launchpoint" 
        target="_blank">
        Share LaunchPoint on LinkedIn
     </a>
   </div>
+
+  <button id="replay" class="replay">🔁 Replay Your Flow</button>
 
   <script>
     const canvas = document.getElementById("canvas");
@@ -111,10 +116,12 @@
     const productLesson = document.getElementById("productLesson");
     const markPrompt = document.getElementById("markPrompt");
     const sharePrompt = document.getElementById("sharePrompt");
+    const replayButton = document.getElementById("replay");
 
     let drawing = false;
     let drawCount = 0;
     let revealed = false;
+    let path = [];
 
     canvas.addEventListener("mousedown", () => drawing = true);
     canvas.addEventListener("mouseup", () => drawing = false);
@@ -143,22 +150,34 @@
       ctx.arc(x, y, 1.5, 0, Math.PI * 2);
       ctx.fill();
 
+      path.push({ x, y });
       drawCount++;
 
       if (drawCount > 100 && !revealed) {
         message.classList.add("reveal");
-        setTimeout(() => {
-          productLesson.style.display = "block";
-        }, 2000);
-        setTimeout(() => {
-          markPrompt.style.display = "block";
-        }, 3500);
-        setTimeout(() => {
-          sharePrompt.style.display = "block";
-        }, 5000);
+        setTimeout(() => productLesson.style.display = "block", 2000);
+        setTimeout(() => markPrompt.style.display = "block", 3500);
+        setTimeout(() => sharePrompt.style.display = "block", 5000);
+        setTimeout(() => replayButton.style.display = "inline-block", 6000);
         revealed = true;
       }
     }
+
+    replayButton.addEventListener("click", () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let i = 0;
+      function animate() {
+        if (i >= path.length) return;
+        const { x, y } = path[i];
+        ctx.fillStyle = "#0077b5"; // contrast color
+        ctx.beginPath();
+        ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        i++;
+        requestAnimationFrame(animate);
+      }
+      animate();
+    });
   </script>
 </body>
 </html>
