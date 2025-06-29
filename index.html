@@ -1,4 +1,3 @@
-<!-- LAUNCHPOINT v2: The Reflective, Branchable, Shareable Experience -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,33 +51,33 @@
     .reveal {
       opacity: 1;
     }
-    .quote-block,
-    .mark-mode,
-    .share-section,
-    .replay,
-    .style-comment,
-    .branching {
+    .block {
       display: none;
-      margin-top: 14px;
+      margin-top: 16px;
+      max-width: 320px;
+      text-align: center;
       font-size: 0.9em;
       color: #555;
-      text-align: center;
+    }
+    .quote-block p {
+      font-style: italic;
+      margin: 4px 0;
     }
     .quote-block strong {
       font-weight: bold;
     }
-    .mark-mode a,
-    .share-section a {
+    a {
       color: #0077b5;
       text-decoration: none;
     }
     #replay {
+      display: none;
+      margin-top: 12px;
       padding: 6px 12px;
       font-size: 0.85em;
       border: 1px solid #aaa;
       background: #fff;
       cursor: pointer;
-      margin-top: 12px;
     }
   </style>
 </head>
@@ -90,22 +89,21 @@
     <div id="message" class="overlay">✨ Momentum builds motivation. You just felt it. ✨</div>
   </div>
 
-  <div id="productLesson" class="quote-block">
+  <div id="productLesson" class="block quote-block">
     <p>“That’s product too.”</p>
     <p>We don’t motivate users. We help them move first—so <strong>they</strong> feel momentum.</p>
   </div>
 
-  <div id="branchingInsight" class="branching"></div>
-  <div id="styleComment" class="style-comment"></div>
-
-  <div id="markPrompt" class="mark-mode">
+  <div id="branching" class="block"></div>
+  <div id="styleComment" class="block"></div>
+  <div id="markPrompt" class="block">
     🖋️ Want to leave your mark?<br>
     <a href="https://yourusername.github.io/launchpoint/?mode=mark" target="_blank">
       Open LaunchPoint in Mark Mode
     </a>
   </div>
 
-  <div id="sharePrompt" class="share-section">
+  <div id="sharePrompt" class="block">
     📣 Felt it? Someone else will too.<br>
     <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://yourusername.github.io/launchpoint" 
        target="_blank">
@@ -113,21 +111,21 @@
     </a>
   </div>
 
-  <div class="share-section">
+  <div class="block">
     🌱 Want to build something like this?<br>
     <a href="https://yourblog.com/launchpoint-principles" target="_blank">
       Learn the Product Truth Behind LaunchPoint
     </a>
   </div>
 
-  <div class="share-section">
+  <div class="block">
     🛠️ Want to create your own insight layer?<br>
     <a href="https://github.com/yourgithub/launchpoint" target="_blank">
       Fork LaunchPoint and ship your truth
     </a>
   </div>
 
-  <button id="replay" class="replay">🔁 Replay Your Flow</button>
+  <button id="replay">🔁 Replay Your Flow</button>
 
   <script>
     const canvas = document.getElementById("canvas");
@@ -138,7 +136,7 @@
     const sharePrompt = document.getElementById("sharePrompt");
     const replayButton = document.getElementById("replay");
     const styleComment = document.getElementById("styleComment");
-    const branchingInsight = document.getElementById("branchingInsight");
+    const branchingBlock = document.getElementById("branching");
 
     let drawing = false;
     let drawCount = 0;
@@ -147,15 +145,18 @@
     let lastTime = null;
     let speeds = [];
 
-    canvas.addEventListener("mousedown", () => drawing = true);
+    canvas.addEventListener("mousedown", e => { drawing = true; draw(e); });
     canvas.addEventListener("mouseup", () => drawing = false);
     canvas.addEventListener("mouseleave", () => drawing = false);
     canvas.addEventListener("mousemove", draw);
 
-    canvas.addEventListener("touchstart", () => drawing = true);
+    canvas.addEventListener("touchstart", e => { drawing = true; draw(e, true); });
     canvas.addEventListener("touchend", () => drawing = false);
     canvas.addEventListener("touchcancel", () => drawing = false);
-    canvas.addEventListener("touchmove", e => draw(e, true));
+    canvas.addEventListener("touchmove", e => {
+      e.preventDefault();
+      draw(e, true);
+    }, { passive: false });
 
     function draw(e, isTouch = false) {
       if (!drawing) return;
@@ -186,47 +187,49 @@
 
       if (drawCount > 100 && !revealed) {
         message.classList.add("reveal");
-        setTimeout(() => productLesson.style.display = "block", 2000);
+        setTimeout(() => productLesson.style.display = "block", 1200);
 
-        // Branching insight logic
-        let insightText = "";
-        if (drawCount < 150) {
-          insightText = "Quick to draw, quick to bounce. That’s impatience—and that’s default UX behavior.";
-        } else if (drawCount < 300) {
-          insightText = "Sustained motion. That’s what flow feels like—equal parts friction and familiarity.";
-        } else {
-          insightText = "You kept going. That’s what curiosity loops feel like. You’ve touched habit-forming terrain.";
-        }
-        branchingInsight.textContent = insightText;
-        setTimeout(() => branchingInsight.style.display = "block", 3500);
-
-        // Style comment (personalized)
-        let avgSpeed = speeds.reduce((a, b) => a + b, 0) / speeds.length;
-        styleComment.textContent = (avgSpeed < 15)
+        // Speed-based comment
+        const avgSpeed = speeds.reduce((a, b) => a + b, 0) / speeds.length;
+        styleComment.textContent = avgSpeed < 15
           ? "You rushed in. That’s how some users explore—curious, but cautious."
           : "Deliberate motion creates deeper anchors. That’s the kind of user who stays.";
-        setTimeout(() => styleComment.style.display = "block", 4500);
+        setTimeout(() => styleComment.style.display = "block", 2500);
 
-        setTimeout(() => markPrompt.style.display = "block", 5500);
-        setTimeout(() => sharePrompt.style.display = "block", 6500);
-        setTimeout(() => replayButton.style.display = "inline-block", 7500);
+        // Branching insight
+        let insight = "";
+        if (drawCount < 150) {
+          insight = "Quick to draw, quick to bounce. That’s impatience—and that’s default UX behavior.";
+        } else if (drawCount < 300) {
+          insight = "Sustained motion. That’s what flow feels like—equal parts friction and familiarity.";
+        } else {
+          insight = "You kept going. That’s what curiosity loops feel like. You’ve touched habit-forming terrain.";
+        }
+        branchingBlock.textContent = insight;
+        setTimeout(() => branchingBlock.style.display = "block", 3500);
 
+        setTimeout(() => markPrompt.style.display = "block", 4500);
+        setTimeout(() => sharePrompt.style.display = "block", 5500);
+        setTimeout(() => replayButton.style.display = "inline-block", 6500);
         revealed = true;
       }
     }
 
-replayButton.addEventListener("click", () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before replay
-  let i = 0;
-  function animate() {
-    if (i >= path.length) return;
-    const { x, y } = path[i];
-    ctx.fillStyle = "#0077b5"; // Use a contrasting color to visually distinguish replay
-    ctx.beginPath();
-    ctx.arc(x, y, 1.5, 0, Math.PI * 2);
-    ctx.fill();
-    i++;
-    requestAnimationFrame(animate);
-  }
-  animate();
-  });
+    replayButton.addEventListener("click", () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let i = 0;
+      function animate() {
+        if (i >= path.length) return;
+        const { x, y } = path[i];
+        ctx.fillStyle = "#0077b5";
+        ctx.beginPath();
+        ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        i++;
+        requestAnimationFrame(animate);
+      }
+      animate();
+    });
+  </script>
+</body>
+</html>
