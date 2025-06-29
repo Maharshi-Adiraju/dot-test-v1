@@ -1,3 +1,4 @@
+<!-- LAUNCHPOINT v2: The Reflective, Branchable, Shareable Experience -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,7 +55,9 @@
     .quote-block,
     .mark-mode,
     .share-section,
-    .replay {
+    .replay,
+    .style-comment,
+    .branching {
       display: none;
       margin-top: 14px;
       font-size: 0.9em;
@@ -92,6 +95,9 @@
     <p>We don’t motivate users. We help them move first—so <strong>they</strong> feel momentum.</p>
   </div>
 
+  <div id="branchingInsight" class="branching"></div>
+  <div id="styleComment" class="style-comment"></div>
+
   <div id="markPrompt" class="mark-mode">
     🖋️ Want to leave your mark?<br>
     <a href="https://yourusername.github.io/launchpoint/?mode=mark" target="_blank">
@@ -107,6 +113,20 @@
     </a>
   </div>
 
+  <div class="share-section">
+    🌱 Want to build something like this?<br>
+    <a href="https://yourblog.com/launchpoint-principles" target="_blank">
+      Learn the Product Truth Behind LaunchPoint
+    </a>
+  </div>
+
+  <div class="share-section">
+    🛠️ Want to create your own insight layer?<br>
+    <a href="https://github.com/yourgithub/launchpoint" target="_blank">
+      Fork LaunchPoint and ship your truth
+    </a>
+  </div>
+
   <button id="replay" class="replay">🔁 Replay Your Flow</button>
 
   <script>
@@ -117,11 +137,15 @@
     const markPrompt = document.getElementById("markPrompt");
     const sharePrompt = document.getElementById("sharePrompt");
     const replayButton = document.getElementById("replay");
+    const styleComment = document.getElementById("styleComment");
+    const branchingInsight = document.getElementById("branchingInsight");
 
     let drawing = false;
     let drawCount = 0;
     let revealed = false;
     let path = [];
+    let lastTime = null;
+    let speeds = [];
 
     canvas.addEventListener("mousedown", () => drawing = true);
     canvas.addEventListener("mouseup", () => drawing = false);
@@ -151,14 +175,42 @@
       ctx.fill();
 
       path.push({ x, y });
+
+      const now = Date.now();
+      if (lastTime) {
+        speeds.push(now - lastTime);
+      }
+      lastTime = now;
+
       drawCount++;
 
       if (drawCount > 100 && !revealed) {
         message.classList.add("reveal");
         setTimeout(() => productLesson.style.display = "block", 2000);
-        setTimeout(() => markPrompt.style.display = "block", 3500);
-        setTimeout(() => sharePrompt.style.display = "block", 5000);
-        setTimeout(() => replayButton.style.display = "inline-block", 6000);
+
+        // Branching insight logic
+        let insightText = "";
+        if (drawCount < 150) {
+          insightText = "Quick to draw, quick to bounce. That’s impatience—and that’s default UX behavior.";
+        } else if (drawCount < 300) {
+          insightText = "Sustained motion. That’s what flow feels like—equal parts friction and familiarity.";
+        } else {
+          insightText = "You kept going. That’s what curiosity loops feel like. You’ve touched habit-forming terrain.";
+        }
+        branchingInsight.textContent = insightText;
+        setTimeout(() => branchingInsight.style.display = "block", 3500);
+
+        // Style comment (personalized)
+        let avgSpeed = speeds.reduce((a, b) => a + b, 0) / speeds.length;
+        styleComment.textContent = (avgSpeed < 15)
+          ? "You rushed in. That’s how some users explore—curious, but cautious."
+          : "Deliberate motion creates deeper anchors. That’s the kind of user who stays.";
+        setTimeout(() => styleComment.style.display = "block", 4500);
+
+        setTimeout(() => markPrompt.style.display = "block", 5500);
+        setTimeout(() => sharePrompt.style.display = "block", 6500);
+        setTimeout(() => replayButton.style.display = "inline-block", 7500);
+
         revealed = true;
       }
     }
@@ -169,15 +221,6 @@
       function animate() {
         if (i >= path.length) return;
         const { x, y } = path[i];
-        ctx.fillStyle = "#0077b5"; // contrast color
+        ctx.fillStyle = "#0077b5";
         ctx.beginPath();
-        ctx.arc(x, y, 1.5, 0, Math.PI * 2);
-        ctx.fill();
-        i++;
-        requestAnimationFrame(animate);
-      }
-      animate();
-    });
-  </script>
-</body>
-</html>
+        ctx.arc(x, y, 1.5,
